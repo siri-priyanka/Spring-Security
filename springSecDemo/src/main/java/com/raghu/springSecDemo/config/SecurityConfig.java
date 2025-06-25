@@ -20,30 +20,30 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Autowired
     private UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
-
         security
-                .csrf(customizer -> customizer.disable())
-                .authorizeHttpRequests(request -> request.anyRequest().authenticated())
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(request -> request.anyRequest().permitAll())  // Allow all requests
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
         return security.build();
     }
 
-//    @Bean
-//    public UserDetailsService userDetailsService(){
-//        UserDetails user = User.withDefaultPasswordEncoder().username("raghu").password("user").roles("USER").build();
-//        UserDetails admin = User.withDefaultPasswordEncoder().username("kodali").password("admin").roles("ADMIN").build();
-//        return new InMemoryUserDetailsManager(user, admin);
-//    }
+    // Unused user details service, kept for future reference
+    // @Bean
+    // public UserDetailsService userDetailsService(){
+    //     UserDetails user = User.withDefaultPasswordEncoder().username("raghu").password("user").roles("USER").build();
+    //     UserDetails admin = User.withDefaultPasswordEncoder().username("kodali").password("admin").roles("ADMIN").build();
+    //     return new InMemoryUserDetailsManager(user, admin);
+    // }
 
     @Bean
-    public AuthenticationProvider authProvider(){
+    public AuthenticationProvider authProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
